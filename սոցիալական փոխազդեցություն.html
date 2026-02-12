@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Լաբորատորիայի Դուռը</title>
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #050a14;
+            --panel-bg: rgba(16, 24, 39, 0.85);
+            --primary: #00f0ff;
+            --secondary: #ff0055;
+            --accent: #ffe600;
+            --success: #00ff9d;
+            --danger: #ff3333;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border: rgba(0, 240, 255, 0.3);
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- BACKGROUND EFFECTS --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            z-index: 10;
+            pointer-events: none;
+            animation: scrollScanlines 10s linear infinite;
+        }
+
+        .glow-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.05), transparent 70%);
+            z-index: 9;
+            pointer-events: none;
+        }
+
+        @keyframes scrollScanlines {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+
+        /* --- LAYOUT --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* --- HEADER --- */
+        .lab-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .status-lights {
+            display: flex;
+            gap: 8px;
+        }
+
+        .light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+            animation: pulseLight 2s infinite;
+        }
+        .light.red { background: var(--danger); color: var(--danger); animation-delay: 0s; }
+        .light.green { background: var(--success); color: var(--success); animation-delay: 0.5s; }
+        .light.orange { 
+            background: var(--accent); 
+            color: var(--accent); 
+            animation-delay: 1s; 
+            display: none; 
+        }
+
+        @keyframes pulseLight {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* --- GLITCH EFFECT --- */
+        h1.glitch {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        h1.glitch::before,
+        h1.glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+        }
+
+        h1.glitch::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--secondary);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+            clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%, 0 45%, 100% 45%, 100% 100%, 0 100%);
+        }
+
+        h1.glitch::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--accent);
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+            clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%, 0 70%, 100% 70%, 100% 100%, 0 100%);
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%, 0 45%, 100% 45%, 100% 100%, 0 100%); transform: translate(0); }
+            20% { clip-path: polygon(0 15%, 100% 15%, 100% 50%, 0 50%, 0 60%, 100% 60%, 100% 85%, 0 85%); transform: translate(-2px, 2px); }
+            40% { clip-path: polygon(0 0, 100% 0, 100% 25%, 0 25%, 0 35%, 100% 35%, 100% 100%, 0 100%); transform: translate(2px, -2px); }
+            60% { clip-path: polygon(0 40%, 100% 40%, 100% 75%, 0 75%, 0 85%, 100% 85%, 100% 100%, 0 100%); transform: translate(-2px, 0); }
+            80% { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%, 0 50%, 100% 50%, 100% 90%, 0 90%); transform: translate(2px, 2px); }
+            100% { clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%, 0 45%, 100% 45%, 100% 100%, 0 100%); transform: translate(0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%, 0 70%, 100% 70%, 100% 100%, 0 100%); transform: translate(0); }
+            20% { clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%, 0 80%, 100% 80%, 100% 100%, 0 100%); transform: translate(2px, -2px); }
+            40% { clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%, 0 55%, 100% 55%, 100% 100%, 0 100%); transform: translate(-2px, 2px); }
+            60% { clip-path: polygon(0 20%, 100% 20%, 100% 35%, 0 35%, 0 65%, 100% 65%, 100% 100%, 0 100%); transform: translate(2px, 0); }
+            80% { clip-path: polygon(0 50%, 100% 50%, 100% 70%, 0 70%, 0 90%, 100% 90%, 100% 100%, 0 100%); transform: translate(-2px, -2px); }
+            100% { clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%, 0 70%, 100% 70%, 100% 100%, 0 100%); transform: translate(0); }
+        }
+
+        .lock-counter {
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .lock-counter .label { font-size: 0.7rem; color: var(--text-dim); }
+        .lock-counter .count { font-size: 1.5rem; color: var(--primary); font-weight: bold; }
+
+        #gameModeBadge {
+            display: none;
+        }
+
+        .game-mode-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 10px;
+            animation: fadeIn 0.5s;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* --- PHASES & PANELS --- */
+        .phase {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .phase.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        /* --- MODE SELECTION --- */
+        .mode-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .mode-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.1); }
+        .mode-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            background: rgba(0, 240, 255, 0.1);
+        }
+        .mode-card.pvp.selected {
+            border-color: var(--secondary);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+            background: rgba(255, 0, 85, 0.1);
+        }
+
+        .mode-icon { font-size: 3rem; margin-bottom: 10px; }
+        .mode-card h3 { color: var(--text); margin-bottom: 10px; }
+        .mode-card p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.4; }
+
+        /* --- PLAYER COUNT --- */
+        .player-count-selector {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .player-count-selector h3 { margin-bottom: 15px; color: var(--text-dim); }
+
+        .count-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .count-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .count-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+        .count-btn.selected { background: var(--primary); color: #000; font-weight: bold; box-shadow: 0 0 15px var(--primary); }
+        .count-btn.custom { width: auto; padding: 0 20px; }
+
+        #customCountInput {
+            display: none;
+        }
+
+        .custom-input {
+            margin-top: 15px;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        .custom-input.active { display: flex; }
+        .custom-input input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            padding: 10px;
+            border-radius: 4px;
+            width: 100px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-primary, .btn-secondary, .btn-danger, .btn-start {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0, 240, 255, 0.6); }
+        .btn-primary:disabled { background: #334155; color: #64748b; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--text-dim);
+            color: var(--text);
+        }
+        .btn-secondary:hover { border-color: var(--text); background: rgba(255,255,255,0.1); }
+
+        .btn-danger {
+            background: rgba(255, 51, 51, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        .btn-start {
+            background: linear-gradient(45deg, var(--secondary), #ff5500);
+            color: white;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-start:disabled { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
+
+        .pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            animation: btnPulse 2s infinite;
+        }
+        @keyframes btnPulse {
+            0% { transform: scale(0.9); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        .action-bar { margin-top: 20px; text-align: center; }
+
+        /* --- INPUT PHASE --- */
+        .progress-bar {
+            background: rgba(0,0,0,0.3);
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress {
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        #playerCountDisplay {
+            position: absolute;
+            right: 0;
+            top: -20px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .input-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .name-input input {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            outline: none;
+        }
+        .name-input input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
+
+        .sequence-input label { display: block; margin-bottom: 10px; color: var(--text-dim); }
+
+        .color-slots {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            min-height: 50px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px dashed var(--border);
+        }
+
+        .color-slot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .color-slot.filled { border-color: white; transform: scale(1.1); }
+        .color-slot.green { background: radial-gradient(circle at 30% 30%, #4ade80, #166534); color: white; text-shadow: 0 0 5px black; }
+        .color-slot.red { background: radial-gradient(circle at 30% 30%, #f87171, #991b1b); color: white; text-shadow: 0 0 5px black; }
+
+        .color-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .color-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .color-btn:active { transform: scale(0.9); }
+        .color-btn.green { background: linear-gradient(135deg, #22c55e, #15803d); }
+        .color-btn.red { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .color-btn.clear { background: #334155; color: white; font-size: 1.2rem; }
+
+        .quick-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .players-list {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .players-list h3 { color: var(--text-dim); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .player-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            animation: popIn 0.3s;
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .player-card .seq-dots { display: flex; gap: 3px; margin-left: auto; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot.green { background: var(--success); }
+        .dot.red { background: var(--danger); }
+
+        /* --- SIMULATION PHASE --- */
+        .simulation-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+
+        .door-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .door-frame {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 4px solid #334155;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .door-frame::before {
+            content: ''; position: absolute; left: -8px; top: 20%; width: 8px; height: 40px; background: #475569; border-radius: 2px;
+            box-shadow: 0 120px 0 #475569;
+        }
+
+        .door-display {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 10px;
+            border: 2px solid #00f0ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .door-display.active { border-color: var(--success); box-shadow: inset 0 0 30px rgba(0, 255, 157, 0.3); }
+        .door-display.locked { border-color: var(--danger); box-shadow: inset 0 0 30px rgba(255, 51, 51, 0.3); animation: shake 0.5s; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .door-screen {
+            text-align: center;
+            width: 100%;
+        }
+
+        .sequence-display {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            min-height: 30px;
+        }
+        .seq-item {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background: #333;
+            border: 1px solid #555;
+            transition: all 0.3s;
+        }
+        .seq-item.correct { background: var(--success); box-shadow: 0 0 10px var(--success); border-color: var(--success); }
+        .seq-item.wrong { background: var(--danger); box-shadow: 0 0 10px var(--danger); border-color: var(--danger); }
+        .seq-item.active { background: var(--primary); box-shadow: 0 0 15px var(--primary); transform: scale(1.2); }
+
+        .door-status {
+            font-family: monospace;
+            color: var(--primary);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .lock-indicator {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lock-ring {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            animation: spin 4s linear infinite;
+            transition: all 0.3s;
+        }
+        .lock-ring.unlocked { border-color: var(--success); color: var(--success); animation: none; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Battle Panel */
+        .battle-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .current-battle {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .vs-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .player-side, .door-side {
+            text-align: center;
+            flex: 1;
+        }
+        .vs {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+            animation: vsPulse 1s infinite alternate;
+        }
+        @keyframes vsPulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        .avatar {
+            font-size: 3rem;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        }
+        .name { font-weight: bold; color: var(--text); margin-bottom: 5px; }
+        .color-display {
+            font-size: 1.5rem;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            display: inline-block;
+            min-width: 50px;
+            transition: all 0.3s;
+        }
+        .color-display.correct { background: rgba(0, 255, 157, 0.2); color: var(--success); box-shadow: 0 0 15px var(--success); }
+        .color-display.wrong { background: rgba(255, 51, 51, 0.2); color: var(--danger); box-shadow: 0 0 15px var(--danger); animation: shake 0.3s; }
+
+        .math-display {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            min-height: 30px;
+            font-family: monospace;
+        }
+
+        .sequence-progress {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .sequence-progress h4 { margin-bottom: 10px; color: var(--primary); }
+
+        .step-dots {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #334155;
+            transition: all 0.3s;
+        }
+        .step-dot.active { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .step-dot.correct { background: var(--success); }
+        .step-dot.wrong { background: var(--danger); }
+
+        .battle-log {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            animation: fadeIn 0.3s;
+        }
+        .log-entry.success { color: var(--success); }
+        .log-entry.fail { color: var(--danger); }
+        .log-entry.info { color: var(--primary); }
+
+        /* --- RESULTS PHASE --- */
+        .results-panel {
+            text-align: center;
+        }
+        .final-status {
+            margin-bottom: 30px;
+        }
+        .status-icon { font-size: 5rem; margin-bottom: 10px; }
+        .final-lock-count {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            display: inline-block;
+        }
+        #finalLockCount { color: var(--primary); font-weight: bold; font-size: 2rem; }
+
+        .top-contributors { margin-bottom: 30px; }
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 20px;
+            height: 200px;
+            margin-top: 20px;
+        }
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: slideUp 0.5s ease-out backwards;
+        }
+        .podium-item:nth-child(1) { animation-delay: 0.1s; }
+        .podium-item:nth-child(2) { animation-delay: 0.2s; }
+        .podium-item:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .podium-rank {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        .podium-bar {
+            width: 80px;
+            background: linear-gradient(to top, var(--primary), transparent);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            color: #000;
+            font-weight: bold;
+            position: relative;
+            border: 1px solid var(--primary);
+            border-bottom: none;
+        }
+        .podium-item.gold .podium-bar { height: 150px; background: linear-gradient(to top, #ffd700, rgba(255, 215, 0, 0.2)); border-color: #ffd700; }
+        .podium-item.silver .podium-bar { height: 100px; background: linear-gradient(to top, #c0c0c0, rgba(192, 192, 192, 0.2)); border-color: #c0c0c0; }
+        .podium-item.bronze .podium-bar { height: 70px; background: linear-gradient(to top, #cd7f32, rgba(205, 127, 50, 0.2)); border-color: #cd7f32; }
+
+        .podium-name {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--text);
+        }
+        .podium-score { color: var(--primary); font-size: 0.9rem; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .stat-name { color: var(--text-dim); }
+        .stat-value { font-weight: bold; color: var(--text); font-size: 1.1rem; }
+
+        /* --- FLOATING NUMBERS --- */
+        #floatingNumbers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .float-num {
+            position: absolute;
+            font-weight: bold;
+            font-size: 1.5rem;
+            animation: floatUp 1s ease-out forwards;
+            text-shadow: 0 0 10px currentColor;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .mode-selection { grid-template-columns: 1fr; }
+            .simulation-layout { grid-template-columns: 1fr; }
+            h1.glitch { font-size: 1.8rem; }
+            .header-top { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Visual Effects -->
+    <div class="scanlines"></div>
+    <div class="glow-overlay"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="lab-header">
+            <div class="header-top">
+                <div class="status-lights">
+                    <div class="light red"></div>
+                    <div class="light green"></div>
+                    <div class="light orange" id="pvpLight"></div>
+                </div>
+                <h1 class="glitch" data-text="ԼԱԲՈՐԱՏՈՐԻԱՅԻ ԴՈՒՌԸ">ԼԱԲՈՐԱՏՈՐԻԱՅԻ ԴՈՒՐԸ</h1>
+                <div class="lock-counter">
+                    <span class="label" id="lockLabel">ԿՈՂՊԵՔՆԵՐ</span>
+                    <span id="lockCount" class="count">15</span>
+                </div>
+            </div>
+            <div id="gameModeBadge">
+                <span class="game-mode-badge">PvE ՄՐՑԱԿՑՈՒԹՅՈՒՆ</span>
+            </div>
+            <p class="subtitle">Սոցիալական փոխազդեցության սիմուլյացիա</p>
+        </header>
+
+        <!-- PHASE 1: MODE SELECTION -->
+        <section id="modePhase" class="phase active">
+            <div class="panel">
+                <h2>🎮 ԸՆՏՐԻՐ ԽԱՂԻ ՌԵԺԻՄԸ</h2>
+                
+                <div class="mode-selection">
+                    <div class="mode-card" id="coopMode" onclick="selectMode('coop')">
+                        <div class="mode-icon">🤝</div>
+                        <h3>ՀԱՄԱԳՈՐԾԱԿՑՈՒԹՅՈՒՆ</h3>
+                        <p>Բոլորը միասին դեմ են AI-ին<br>Նպատակ՝ զրոյացնել կողպեքները</p>
+                    </div>
+                    <div class="mode-card pvp" id="pveMode" onclick="selectMode('pve')">
+                        <div class="mode-icon">🏆</div>
+                        <h3>ՄՐՑԱԿՑՈՒԹՅՈՒՆ</h3>
+                        <p>Աշակերտներն իրար դեմ են<br>Ով ավելի շատ միավոր հավաքի՝ հաղթում է</p>
+                    </div>
+                </div>
+
+                <div class="player-count-selector">
+                    <h3>👥 ԽԱՂԱՑՈՂՆԵՐԻ ՔԱՆԱԿ</h3>
+                    <div class="count-buttons">
+                        <button class="count-btn" onclick="selectPlayerCount(1)">1</button>
+                        <button class="count-btn" onclick="selectPlayerCount(2)">2</button>
+                        <button class="count-btn" onclick="selectPlayerCount(3)">3</button>
+                        <button class="count-btn" onclick="selectPlayerCount(4)">4</button>
+                        <button class="count-btn" onclick="selectPlayerCount(5)">5</button>
+                        <button class="count-btn" onclick="selectPlayerCount(10)">10</button>
+                        <button class="count-btn custom" onclick="selectPlayerCount('custom')">ԱՅԼ</button>
+                    </div>
+                    <div class="custom-input" id="customCountInput">
+                        <input type="number" id="customCount" min="1" max="30" value="4" placeholder="1-30">
+                        <button class="btn-primary" onclick="confirmCustomCount()">Հաստատել</button>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="confirmMode" class="btn-start" disabled onclick="confirmMode()">
+                        ՍԿՍԵԼ ԽԱՂԸ
+                        <span class="pulse"></span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHASE 2: PLAYER INPUT -->
+        <section id="inputPhase" class="phase">
+            <div class="panel">
+                <h2 id="inputTitle">🎮 ԱՇԱԿԵՐՏՆԵՐԻ ԳՐԱՆՑՈՒՄ</h2>
+                <div class="progress-bar">
+                    <div class="progress" id="progressBar"></div>
+                    <span id="playerCountDisplay">0/30 աշակերտ</span>
+                </div>
+                
+                <div class="input-grid">
+                    <div class="name-input">
+                        <input type="text" id="playerName" placeholder="Աշակերտի անուն..." maxlength="20">
+                    </div>
+                    <div class="sequence-input">
+                        <label>Ընտրիր 10 գույների հաջորդականություն:</label>
+                        <div class="color-slots" id="colorSlots"></div>
+                        <div class="color-buttons">
+                            <button class="color-btn green" onclick="addColor('green')" title="Կանաչ">🟢</button>
+                            <button class="color-btn red" onclick="addColor('red')" title="Կարմիր">🔴</button>
+                            <button class="color-btn clear" onclick="clearSequence()" title="Մաքրել">❌</button>
+                        </div>
+                    </div>
+                    <button id="addPlayer" class="btn-primary" onclick="addPlayer()" disabled>➕ Ավելացնել աշակերտ</button>
+                </div>
+
+                <div class="quick-actions">
+                    <button id="randomFill" class="btn-secondary" onclick="randomFill()">🎲 Պատահական լրացնել</button>
+                    <button id="clearAll" class="btn-danger" onclick="clearAllPlayers()">🗑️ Մաքրել բոլորը</button>
+                    <button id="backToMode" class="btn-secondary" onclick="backToMode()">↩️ Ռեժիմ</button>
+                </div>
+
+                <div class="players-list" id="playersList">
+                    <h3>📋 Գրանցված աշակերտներ</h3>
+                    <div class="players-grid" id="playersGrid"></div>
+                </div>
+
+                <div class="action-bar">
+                    <button id="startGame" class="btn-start" disabled onclick="startSimulation()">
+                        🔓 ԲԱՑԵԼ ԴՈՒՐԸ
+                        <span class="pulse"></span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHASE 3: SIMULATION -->
+        <section id="simulationPhase" class="phase">
+            <div class="simulation-layout">
+                <div class="door-panel" id="doorPanel">
+                    <div class="door-frame">
+                        <div class="door-display" id="doorDisplay">
+                            <div class="door-screen" id="doorScreen">
+                                <div id="doorSequence" class="sequence-display"></div>
+                                <div class="door-status" id="doorStatus">AI ԴՈՒՐ</div>
+                            </div>
+                            <div class="lock-indicator">
+                                <div class="lock-ring" id="lockRing">
+                                    <span id="simLockCount">15</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="battle-panel">
+                    <div class="current-battle" id="currentBattle">
+                        <div class="vs-display" id="vsDisplay">
+                            <div class="player-side">
+                                <div class="avatar" id="battleAvatar">👤</div>
+                                <div class="name" id="battleName">Աշակերտ</div>
+                                <div class="color-display" id="playerColor">⚪</div>
+                            </div>
+                            <div class="vs" id="vsText">VS</div>
+                            <div class="door-side">
+                                <div class="avatar">🤖</div>
+                                <div class="name">Դուռ</div>
+                                <div class="color-display" id="doorColor">⚪</div>
+                            </div>
+                        </div>
+                        <div class="math-display" id="mathDisplay"></div>
+                    </div>
+
+                    <div class="sequence-progress">
+                        <h4>Քայլ <span id="currentStep">1</span>/10</h4>
+                        <div class="step-dots" id="stepDots"></div>
+                    </div>
+
+                    <div class="battle-log" id="battleLog">
+                        <div class="log-entry info">Սպասում ենք սիմուլյացիայի մեկնարկին...</div>
+                    </div>
+                    
+                    <div class="action-bar">
+                        <button class="btn-secondary" onclick="showCurrentResults()">📊 Տեսնել արդյունքները</button>
+                        <button class="btn-danger" onclick="restartFromSimulation()">🔄 Վերսկսել</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHASE 4: RESULTS -->
+        <section id="resultsPhase" class="phase">
+            <div class="results-panel">
+                <div class="final-status" id="finalStatus">
+                    <div class="status-icon" id="statusIcon">🔒</div>
+                    <h2 id="resultTitle">Արդյունքը</h2>
+                    <p id="resultMessage"></p>
+                </div>
+
+                <div class="final-lock-count" id="finalLockSection">
+                    <span id="finalLockLabel">Վերջնական կողպեքներ:</span> <span id="finalLockCount">0</span>
+                </div>
+
+                <div class="top-contributors" id="topContributors">
+                    <h3 id="podiumTitle">🏆 ԼԱՎԱԳՈՒՅՆ ՆԵՐԴՐՈՒՄ ՈՒՆԵՑԱՎՈՐՆԵՐ</h3>
+                    <div class="podium" id="podium"></div>
+                </div>
+
+                <div class="detailed-stats" id="detailedStats">
+                    <h3>📊 ՄԱՆՐԱՄԱՍՆ ՍՏԱՏԻՍՏԻԿԱ</h3>
+                    <div class="stats-grid" id="statsGrid"></div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn-secondary" onclick="backToSimulation()">↩️ Վերադառնալ սիմուլյացիա</button>
+                    <button id="restartGame" class="btn-primary" onclick="resetGame()">🔄 Նոր խաղ</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="floatingNumbers"></div>
+
+    <script>
+        // --- GAME STATE ---
+        const state = {
+            mode: null,
+            maxPlayers: 0,
+            players: [],
+            currentPlayerIndex: 0,
+            locks: 15,
+            isSimulating: false,
+            simulationEnded: false,
+            sequenceLength: 10,
+            colors: ['green', 'red']
+        };
+
+        let tempSequence = [];
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initColorSlots();
+            updatePlayerList();
+        });
+
+        // --- PHASE 1: MODE SELECTION ---
+        function selectMode(mode) {
+            state.mode = mode;
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(mode === 'coop' ? 'coopMode' : 'pveMode').classList.add('selected');
+            checkModeReady();
+        }
+
+        function selectPlayerCount(count) {
+            if (count === 'custom') {
+                document.getElementById('customCountInput').classList.add('active');
+                document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+                event.target.classList.add('selected');
+                state.maxPlayers = 0;
+            } else {
+                document.getElementById('customCountInput').classList.remove('active');
+                document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+                event.target.classList.add('selected');
+                state.maxPlayers = count;
+            }
+            checkModeReady();
+        }
+
+        function confirmCustomCount() {
+            const val = parseInt(document.getElementById('customCount').value);
+            if (val >= 1 && val <= 30) {
+                state.maxPlayers = val;
+                checkModeReady();
+            } else {
+                alert('Մուտքագրեք թիվ 1-30 միջակայքում');
+            }
+        }
+
+        function checkModeReady() {
+            const btn = document.getElementById('confirmMode');
+            btn.disabled = !(state.mode && state.maxPlayers > 0);
+        }
+
+        function confirmMode() {
+            document.getElementById('modePhase').classList.remove('active');
+            document.getElementById('inputPhase').classList.add('active');
+            document.getElementById('inputTitle').innerText = `🎮 ԱՇԱԿԵՐՏՆԵՐԻ ԳՐԱՆՑՈՒՄ (${state.maxPlayers} հոգի)`;
+            
+            if (state.mode === 'pve') {
+                document.getElementById('pvpLight').style.display = 'block';
+                document.getElementById('gameModeBadge').style.display = 'block';
+                document.getElementById('lockLabel').innerText = 'ՄԻԱՎՈՐՆԵՐ';
+                document.getElementById('lockCount').innerText = '0';
+            }
+            
+            updateProgress();
+        }
+
+        function backToMode() {
+            document.getElementById('inputPhase').classList.remove('active');
+            document.getElementById('modePhase').classList.add('active');
+            resetGameData();
+        }
+
+        // --- PHASE 2: INPUT ---
+        function initColorSlots() {
+            const container = document.getElementById('colorSlots');
+            container.innerHTML = '';
+            for (let i = 0; i < state.sequenceLength; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'color-slot';
+                slot.id = `slot-${i}`;
+                container.appendChild(slot);
+            }
+        }
+
+        function addColor(color) {
+            if (tempSequence.length < state.sequenceLength) {
+                tempSequence.push(color);
+                updateColorSlots();
+            }
+        }
+
+        function clearSequence() {
+            tempSequence = [];
+            updateColorSlots();
+        }
+
+        function updateColorSlots() {
+            for (let i = 0; i < state.sequenceLength; i++) {
+                const slot = document.getElementById(`slot-${i}`);
+                if (i < tempSequence.length) {
+                    slot.className = `color-slot filled ${tempSequence[i]}`;
+                    slot.innerText = tempSequence[i] === 'green' ? '🟢' : '🔴';
+                } else {
+                    slot.className = 'color-slot';
+                    slot.innerText = '';
+                }
+            }
+            document.getElementById('addPlayer').disabled = tempSequence.length !== state.sequenceLength;
+        }
+
+        function addPlayer() {
+            const nameInput = document.getElementById('playerName');
+            const name = nameInput.value.trim() || `Աշակերտ ${state.players.length + 1}`;
+            
+            if (state.players.length >= state.maxPlayers) {
+                alert('Աշակերտների քանակը լրացել է!');
+                return;
+            }
+
+            state.players.push({
+                name: name,
+                sequence: [...tempSequence],
+                score: 0,
+                matches: 0
+            });
+
+            nameInput.value = '';
+            tempSequence = [];
+            updateColorSlots();
+            updatePlayerList();
+            updateProgress();
+        }
+
+        function randomFill() {
+            tempSequence = [];
+            for (let i = 0; i < state.sequenceLength; i++) {
+                tempSequence.push(Math.random() > 0.5 ? 'green' : 'red');
+            }
+            updateColorSlots();
+        }
+
+        function clearAllPlayers() {
+            if (confirm('Վստա՞հ եք, որ ցանկանում եք ջնջել բոլոր աշակերտներին')) {
+                state.players = [];
+                updatePlayerList();
+                updateProgress();
+            }
+        }
+
+        function updatePlayerList() {
+            const grid = document.getElementById('playersGrid');
+            grid.innerHTML = '';
+            
+            state.players.forEach((p, index) => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                
+                const dots = p.sequence.map(c => `<div class="dot ${c}"></div>`).join('');
+                
+                card.innerHTML = `
+                    <span>${index + 1}. ${p.name}</span>
+                    <div class="seq-dots">${dots}</div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('startGame').disabled = state.players.length === 0;
+        }
+
+        function updateProgress() {
+            const pct = (state.players.length / state.maxPlayers) * 100;
+            document.getElementById('progressBar').style.width = `${pct}%`;
+            document.getElementById('playerCountDisplay').innerText = `${state.players.length}/${state.maxPlayers} աշակերտ`;
+        }
+
+        // --- PHASE 3: SIMULATION ---
+        async function startSimulation() {
+            document.getElementById('inputPhase').classList.remove('active');
+            document.getElementById('simulationPhase').classList.add('active');
+            
+            state.isSimulating = true;
+            state.simulationEnded = false;
+            state.currentPlayerIndex = 0;
+            
+            state.doorSequence = Array.from({length: state.sequenceLength}, () => Math.random() > 0.5 ? 'green' : 'red');
+            
+            renderDoorSequence();
+            initStepDots();
+            log("ՍԻՄՈՒԼՅԱՑԻԱՆ ՍԿՍՎԵՑ", "info");
+            
+            await runSimulationLoop();
+        }
+
+        function renderDoorSequence() {
+            const container = document.getElementById('doorSequence');
+            container.innerHTML = '';
+            state.doorSequence.forEach(() => {
+                const div = document.createElement('div');
+                div.className = 'seq-item';
+                container.appendChild(div);
+            });
+        }
+
+        function initStepDots() {
+            const container = document.getElementById('stepDots');
+            container.innerHTML = '';
+            for(let i=0; i<state.sequenceLength; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'step-dot';
+                dot.id = `step-dot-${i}`;
+                container.appendChild(dot);
+            }
+        }
+
+        async function runSimulationLoop() {
+            for (let i = 0; i < state.players.length; i++) {
+                if (!state.isSimulating) return;
+                
+                state.currentPlayerIndex = i;
+                const player = state.players[i];
+                
+                document.getElementById('battleName').innerText = player.name;
+                document.getElementById('battleAvatar').innerText = getAvatar(player.name);
+                document.getElementById('playerColor').innerText = '⚪';
+                document.getElementById('playerColor').className = 'color-display';
+                document.getElementById('doorColor').innerText = '⚪';
+                document.getElementById('doorColor').className = 'color-display';
+                document.getElementById('mathDisplay').innerText = '';
+                
+                log(`Հերթը ${player.name}-ինն է`, "info");
+                
+                for (let step = 0; step < state.sequenceLength; step++) {
+                    if (!state.isSimulating) return;
+                    
+                    document.getElementById('currentStep').innerText = step + 1;
+                    document.querySelectorAll('.step-dot').forEach((d, idx) => {
+                        d.classList.toggle('active', idx === step);
+                    });
+
+                    const playerColor = player.sequence[step];
+                    const doorColor = state.doorSequence[step];
+                    const isMatch = playerColor === doorColor;
+
+                    await animateBattle(playerColor, doorColor, isMatch, step);
+                    
+                    if (isMatch) {
+                        player.matches++;
+                        player.score++;
+                        if (state.mode === 'coop') state.locks--;
+                    } else {
+                        if (state.mode === 'pve') player.score--;
+                    }
+
+                    updateLockDisplay();
+                    
+                    if (state.mode === 'coop' && state.locks <= 0) {
+                        endGame(true);
+                        return;
+                    }
+                    
+                    await wait(300);
+                }
+                
+                log(`${player.name} ավարտեց (Համընկնումներ: ${player.matches})`, "info");
+                await wait(500);
+            }
+            
+            endGame(false);
+        }
+
+        async function animateBattle(pColor, dColor, isMatch, stepIndex) {
+            const pDisplay = document.getElementById('playerColor');
+            const dDisplay = document.getElementById('doorColor');
+            const mathDisplay = document.getElementById('mathDisplay');
+            const seqItem = document.getElementById('doorSequence').children[stepIndex];
+            
+            pDisplay.innerText = pColor === 'green' ? '🟢' : '🔴';
+            dDisplay.innerText = dColor === 'green' ? '🟢' : '🔴';
+            
+            await wait(400);
+            
+            if (isMatch) {
+                pDisplay.classList.add('correct');
+                dDisplay.classList.add('correct');
+                seqItem.classList.add('correct');
+                document.getElementById(`step-dot-${stepIndex}`).classList.add('correct');
+                mathDisplay.innerHTML = "<span style='color:var(--success)'>ՀԱՄԸՆԿՆՈՒՄ ✓</span>";
+                showFloatingText("+1", "var(--success)");
+                log("Համընկնում!", "success");
+            } else {
+                pDisplay.classList.add('wrong');
+                dDisplay.classList.add('wrong');
+                seqItem.classList.add('wrong');
+                document.getElementById(`step-dot-${stepIndex}`).classList.add('wrong');
+                mathDisplay.innerHTML = "<span style='color:var(--danger)'>ՉԻ ՀԱՄԸՆԿՆՈՒՄ ✗</span>";
+                if (state.mode === 'pve') showFloatingText("-1", "var(--danger)");
+                log("Չի համընկնում", "fail");
+            }
+            
+            await wait(600);
+        }
+
+        function updateLockDisplay() {
+            const countEl = document.getElementById('simLockCount');
+            const ring = document.getElementById('lockRing');
+            
+            if (state.mode === 'coop') {
+                countEl.innerText = Math.max(0, state.locks);
+                if (state.locks <= 0) {
+                    ring.classList.add('unlocked');
+                    document.getElementById('doorDisplay').classList.add('active');
+                }
+            } else {
+                const current = state.players[state.currentPlayerIndex];
+                countEl.innerText = current.score;
+            }
+        }
+
+        function log(msg, type) {
+            const logEl = document.getElementById('battleLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerText = `> ${msg}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function showFloatingText(text, color) {
+            const container = document.getElementById('floatingNumbers');
+            const el = document.createElement('div');
+            el.className = 'float-num';
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = '50%';
+            el.style.top = '40%';
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        // --- NAVIGATION FUNCTIONS ---
+        function showCurrentResults() {
+            state.isSimulating = false;
+            renderResultsContent();
+            document.getElementById('simulationPhase').classList.remove('active');
+            document.getElementById('resultsPhase').classList.add('active');
+        }
+
+        function backToSimulation() {
+            document.getElementById('resultsPhase').classList.remove('active');
+            document.getElementById('simulationPhase').classList.add('active');
+            state.isSimulating = true;
+            if (!state.simulationEnded) {
+                runSimulationLoop();
+            }
+        }
+
+        function restartFromSimulation() {
+            if (confirm('Վստա՞հ եք, որ ցանկանում եք վերսկսել խաղը։ Արդյունքները կջնջվեն։')) {
+                resetGameData();
+                document.getElementById('simulationPhase').classList.remove('active');
+                document.getElementById('modePhase').classList.add('active');
+            }
+        }
+
+        // --- PHASE 4: RESULTS ---
+        function endGame(victory) {
+            state.isSimulating = false;
+            state.simulationEnded = true;
+            renderResultsContent(victory);
+            document.getElementById('simulationPhase').classList.remove('active');
+            document.getElementById('resultsPhase').classList.add('active');
+        }
+
+        function renderResultsContent(victory) {
+            const statusIcon = document.getElementById('statusIcon');
+            const title = document.getElementById('resultTitle');
+            const msg = document.getElementById('resultMessage');
+            const finalLockSection = document.getElementById('finalLockSection');
+            
+            if (state.mode === 'coop') {
+                if (victory) {
+                    statusIcon.innerText = '🔓';
+                    title.innerText = 'ԴՈՒՐԸ ԲԱՑՎԵՑ!';
+                    msg.innerText = 'Աշակերտները հաջողությամբ համագործակցեցին և հաղթահարեցին AI-ին։';
+                    launchConfetti();
+                } else {
+                    statusIcon.innerText = '🔒';
+                    title.innerText = 'ԱՅՍ ԱՆԳԱՄ ՉՀԱՋՈՂՎԵՑ';
+                    msg.innerText = 'Կողպեքները չզրոյացվեցին։ Փորձեք ավելի լավ համագործակցել։';
+                }
+                finalLockSection.style.display = 'block';
+                document.getElementById('finalLockCount').innerText = Math.max(0, state.locks);
+            } else {
+                statusIcon.innerText = '🏆';
+                title.innerText = 'ՄՐՑԱԿՑՈՒԹՅՈՒՆԸ ԱՎԱՐՏՎԵՑ';
+                msg.innerText = 'Ահա արդյունքները՝ ըստ հավաքած միավորների։';
+                finalLockSection.style.display = 'none';
+            }
+            
+            renderPodium();
+            renderStats();
+        }
+
+        function renderPodium() {
+            const sorted = [...state.players].sort((a, b) => b.score - a.score);
+            const podium = document.getElementById('podium');
+            podium.innerHTML = '';
+            
+            const medals = ['gold', 'silver', 'bronze'];
+            const icons = ['🥇', '🥈', '🥉'];
+            
+            sorted.slice(0, 3).forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = `podium-item ${medals[i]}`;
+                div.innerHTML = `
+                    <div class="podium-rank">${icons[i]}</div>
+                    <div class="podium-bar">${p.score}</div>
+                    <div class="podium-name">${p.name}</div>
+                    <div class="podium-score">${p.matches} համընկնում</div>
+                `;
+                podium.appendChild(div);
+            });
+        }
+
+        function renderStats() {
+            const grid = document.getElementById('statsGrid');
+            grid.innerHTML = '';
+            
+            const sorted = [...state.players].sort((a, b) => b.score - a.score);
+            
+            sorted.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.innerHTML = `
+                    <span class="stat-name">${p.name}</span>
+                    <span class="stat-value">${p.score} միավոր (${p.matches} համընկնում)</span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- UTILS ---
+        function wait(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function getAvatar(name) {
+            const emojis = ['👨‍🎓', '👩‍🎓', '🧑‍🔬', '👨‍💻', '👩‍💻', '🤖', '👾', '👽', '🤡', '👹'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            return emojis[Math.abs(hash) % emojis.length];
+        }
+
+        function resetGame() {
+            resetGameData();
+            document.getElementById('resultsPhase').classList.remove('active');
+            document.getElementById('modePhase').classList.add('active');
+        }
+
+        function resetGameData() {
+            state.players = [];
+            state.locks = 15;
+            state.mode = null;
+            state.maxPlayers = 0;
+            state.isSimulating = false;
+            state.simulationEnded = false;
+            tempSequence = [];
+            
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('customCountInput').classList.remove('active');
+            document.getElementById('confirmMode').disabled = true;
+            document.getElementById('pvpLight').style.display = 'none';
+            document.getElementById('gameModeBadge').style.display = 'none';
+            document.getElementById('lockLabel').innerText = 'ԿՈՂՊԵՔՆԵՐ';
+            document.getElementById('lockCount').innerText = '15';
+            document.getElementById('battleLog').innerHTML = '<div class="log-entry info">Սպասում ենք...</div>';
+            document.getElementById('lockRing').classList.remove('unlocked');
+            document.getElementById('doorDisplay').classList.remove('active');
+            
+            initColorSlots();
+            updatePlayerList();
+            updateProgress();
+        }
+
+        function launchConfetti() {
+            for(let i=0; i<50; i++) {
+                const c = document.createElement('div');
+                c.style.position = 'fixed';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-10px';
+                c.style.width = '10px';
+                c.style.height = '10px';
+                c.style.backgroundColor = ['#ff0', '#f00', '#0f0', '#00f'][Math.floor(Math.random()*4)];
+                c.style.zIndex = '999';
+                c.style.transition = 'top 2s ease-in, transform 2s linear';
+                document.body.appendChild(c);
+                
+                setTimeout(() => {
+                    c.style.top = '110vh';
+                    c.style.transform = `rotate(${Math.random()*360}deg)`;
+                }, 100);
+                
+                setTimeout(() => c.remove(), 2100);
+            }
+        }
+    </script>
+</body>
+</html>
